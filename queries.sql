@@ -22,13 +22,14 @@ SELECT name, price FROM products WHERE price > 2000 ORDER BY price DESC LIMIT 5;
 -- 5. Агрегация (по категориям)
 SELECT category, COUNT(*) AS count, AVG(price) AS avg_price FROM products GROUP BY category HAVING COUNT(*) > 5;
 
--- 6. LIKE (исправленный: ищем точное совпадение регистра)
-SELECT name, price FROM products WHERE name LIKE '%Эфиопия%';
+-- 6. LIKE (регистронезависимый поиск через UPPER)
+SELECT name, sku FROM products WHERE UPPER(sku) LIKE 'TED%';
 
--- 7. JOIN (сводная выборка заказов)
-SELECT o.id AS order_id, p.name AS product_name, o.quantity, (o.quantity * p.price) AS total_sum
+-- 7. JOIN: сводная выборка заказов с суммой по категориям
+SELECT p.category, SUM(o.quantity * p.price) AS total_revenue
 FROM orders o
-JOIN products p ON o.product_id = p.id;
+JOIN products p ON o.product_id = p.id
+GROUP BY p.category;
 
 -- 10. Пример безопасности (Параметризация)
 -- ОПАСНО (никогда так не делайте):
